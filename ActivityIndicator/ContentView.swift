@@ -39,11 +39,36 @@ struct CustomActivityIndicatorShape: Shape {
 }
 
 struct ContentView: View {
+  @State var startOffset: CGFloat = -100
+  var endOffset: CGFloat {
+    startOffset + 100 - sliderWidth
+  }
+  let sliderWidth: CGFloat = 25
+  let duration: Double = 0.75
   var body: some View {
-    Rectangle()
-      .fill(Color.activityIndicatorBackgroundColor)
-      .frame(width: 100, height: 85, alignment: .center)
-      .clipShape(CustomActivityIndicatorShape())
+    ZStack {
+      Rectangle()
+        .fill(Color.activityIndicatorBackgroundColor)
+        .clipShape(CustomActivityIndicatorShape())
+        .frame(width: 100, height: 80, alignment: .center)
+      Rectangle()
+        .fill(Color.sliderColor)
+        .clipShape(CustomActivityIndicatorShape())
+        .frame(width: 100, height: 80, alignment: .center)
+        .mask(Rectangle()
+          .offset(x: startOffset))
+        .mask(Rectangle()
+          .offset(x: endOffset))
+    }
+    .animation(Animation.linear(duration: duration)
+    .repeatForever(autoreverses: false))
+    .onAppear {
+      self.animate()
+    }
+  }
+  
+  func animate() {
+    startOffset = sliderWidth
   }
 }
 
@@ -52,6 +77,11 @@ extension Color {
     return .init(red: 180 / 255.0,
                  green: 220 / 255.0,
                  blue: 210 / 255.0)
+  }
+  static var sliderColor: Color {
+    return .init(red: 129 / 255.0,
+                 green: 209 / 255.0,
+                 blue: 183 / 255.0)
   }
 }
 
