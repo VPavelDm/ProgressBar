@@ -8,7 +8,7 @@
 
 import SwiftUI
 
-struct CustomActivityIndicatorShape: Shape {
+struct ProgressBarShape: Shape {
   func path(in rect: CGRect) -> Path {
     var path = Path()
     
@@ -38,47 +38,56 @@ struct CustomActivityIndicatorShape: Shape {
   }
 }
 
-struct ContentView: View {
-  @State var startOffset: CGFloat = -100
-  var endOffset: CGFloat {
-    startOffset + 100 - sliderWidth
-  }
-  let sliderWidth: CGFloat = 25
-  let duration: Double = 0.75
+struct ProgressBar: View {
+  @State private var xOffset: CGFloat = 0
+  let width: CGFloat
+  let duration: Double
+  let backgroundColor: Color
+  let color: Color
+  
   var body: some View {
-    ZStack {
-      Rectangle()
-        .fill(Color.activityIndicatorBackgroundColor)
-        .clipShape(CustomActivityIndicatorShape())
-        .frame(width: 100, height: 80, alignment: .center)
-      Rectangle()
-        .fill(Color.sliderColor)
-        .clipShape(CustomActivityIndicatorShape())
-        .frame(width: 100, height: 80, alignment: .center)
-        .mask(Rectangle()
-          .offset(x: startOffset))
-        .mask(Rectangle()
-          .offset(x: endOffset))
-    }
-    .animation(Animation.linear(duration: duration)
-    .repeatForever(autoreverses: false))
-    .onAppear {
-      self.animate()
+    GeometryReader { geometry in
+      ZStack {
+        Rectangle()
+          .fill(self.backgroundColor)
+          .clipShape(ProgressBarShape())
+        Rectangle()
+          .fill(self.color)
+          .clipShape(ProgressBarShape())
+          .mask(Rectangle()
+            .path(in: .init(x: -self.width, y: 0,
+                            width: self.width,
+                            height: geometry.size.height))
+            .offset(x: self.xOffset))
+      }
+      .animation(Animation.linear(duration: self.duration)
+      .repeatForever(autoreverses: false))
+      .onAppear {
+        self.animate(width: geometry.size.width)
+      }
     }
   }
   
-  func animate() {
-    startOffset = sliderWidth
+  func animate(width: CGFloat) {
+    xOffset = width + self.width
+  }
+}
+
+struct ContentView: View {
+  var body: some View {
+    ProgressBar(width: 25, duration: 1,
+                backgroundColor: .background, color: .slider)
+      .frame(width: 100, height: 80, alignment: .center)
   }
 }
 
 extension Color {
-  static var activityIndicatorBackgroundColor: Color {
+  static var background: Color {
     return .init(red: 180 / 255.0,
                  green: 220 / 255.0,
                  blue: 210 / 255.0)
   }
-  static var sliderColor: Color {
+  static var slider: Color {
     return .init(red: 129 / 255.0,
                  green: 209 / 255.0,
                  blue: 183 / 255.0)
