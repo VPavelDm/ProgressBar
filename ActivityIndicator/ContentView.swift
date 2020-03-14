@@ -8,17 +8,19 @@
 
 import SwiftUI
 
-struct CustomActivityIndicator: Shape {
+struct CustomActivityIndicatorShape: Shape {
   func path(in rect: CGRect) -> Path {
     var path = Path()
     
     let distance = rect.width / 5
-    let firstPoint = CGPoint(x: 0, y: rect.height / 2)
+    let lineWidth: CGFloat = 10
+    let cornerRadius = lineWidth / 2
+    let firstPoint = CGPoint(x: cornerRadius, y: rect.height / 2)
     let secondPoint = CGPoint(x: distance, y: firstPoint.y)
-    let thirdPoint = CGPoint(x: distance * 2, y: rect.height)
-    let fourthPoint = CGPoint(x: distance * 3, y: 0)
+    let thirdPoint = CGPoint(x: distance * 2, y: rect.height - cornerRadius)
+    let fourthPoint = CGPoint(x: distance * 3, y: cornerRadius)
     let fifthPoint = CGPoint(x: distance * 4, y: firstPoint.y)
-    let sixthPoint = CGPoint(x: distance * 5, y: firstPoint.y)
+    let sixthPoint = CGPoint(x: distance * 5 - cornerRadius, y: firstPoint.y)
     
     path.move(to: firstPoint)
     path.addLine(to: secondPoint)
@@ -32,17 +34,16 @@ struct CustomActivityIndicator: Shape {
     path.addLine(to: sixthPoint)
     
     return path
+      .strokedPath(StrokeStyle(lineWidth: lineWidth, lineCap: .round))
   }
 }
 
 struct ContentView: View {
   var body: some View {
-    VStack {
-      CustomActivityIndicator()
-        .stroke(style: StrokeStyle(lineWidth: 15, lineCap: .round))
-        .fill(Color.activityIndicatorBackgroundColor)
-        .frame(width: 100, height: 85)
-    }
+    Rectangle()
+      .fill(Color.activityIndicatorBackgroundColor)
+      .frame(width: 100, height: 85, alignment: .center)
+      .clipShape(CustomActivityIndicatorShape())
   }
 }
 
