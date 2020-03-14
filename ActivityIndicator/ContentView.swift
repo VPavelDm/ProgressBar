@@ -60,8 +60,7 @@ struct ProgressBar: View {
                             height: geometry.size.height))
             .offset(x: self.xOffset))
       }
-      .animation(Animation.linear(duration: self.duration)
-      .repeatForever(autoreverses: false))
+      .animation(Animation.linear(duration: self.duration).repeatForever(autoreverses: false))
       .onAppear {
         self.animate(width: geometry.size.width)
       }
